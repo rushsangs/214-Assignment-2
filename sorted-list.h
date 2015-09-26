@@ -6,13 +6,29 @@
 
 #include <stdlib.h>
 
+
+
+/*Nodes for my sorted list
+*/
+typedef struct Node
+{
+	int refctr;
+	void * data;
+	struct Node * next; 
+} Node;
+
 /*
  * Sorted list type.  You need to fill in the type as part of your implementation.
  */
 struct SortedList
 {
+	int (* CompareFuncT) (void *, void *);
+	void ( *DestructFuncT) (void *);
+	Node *head;
 };
 typedef struct SortedList* SortedListPtr;
+
+
 
 
 /*
@@ -54,7 +70,13 @@ typedef void (*DestructFuncT)( void * );
  * You need to fill in this function as part of your implementation.
  */
 
-SortedListPtr SLCreate(CompareFuncT cf, DestructFuncT df);
+SortedListPtr SLCreate(CompareFuncT cf, DestructFuncT df){
+	SortedListPtr* list=(SortedListPtr*)malloc(sizeof(SortedListPtr));
+	list->CompareFuncT=cf;
+	list->DestructFuncT=df;
+	list->head=NULL;
+	return list;
+}
 
 /*
  * SLDestroy destroys a list, freeing all dynamically allocated memory.
@@ -74,7 +96,24 @@ void SLDestroy(SortedListPtr list);
  * You need to fill in this function as part of your implementation.
  */
 
-int SLInsert(SortedListPtr list, void *newObj);
+int SLInsert(SortedListPtr list, void *newObj){
+	if(list->head==NULL)
+	{
+		//insert first element into list
+		Node* newnode=(Node*)calloc(sizeof(Node));
+		list->head=newnode;
+		newnode->data=newObj;
+		newnode->refctr=1;
+		newnode->next=NULL;
+		return 1;
+	}
+	else
+	{
+		//traverse through linked list and keep checking order
+		int result=0;
+	}
+	return 0;
+}
 
 
 /*
