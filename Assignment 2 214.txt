@@ -1,0 +1,25 @@
+ITERATOR:
+
+Create an iterator struct which contains:
+- a pointer ot one of these nodes
+the value that holds the data 
+the reference counter
+pointer to next node
+
+Create Iterator:
+Create iterator, which points to first element in the list. Increment reference count in that node.
+
+Traverse the iterator:
+Get next node. 
+Decrement the ref. count at the current node, and increment ref. count at the new node.
+
+Delete the iterator:
+Have the iterator point to null, and then decrement the node reference count.
+If reference count becomes zero, delete the node.
+
+
+Eg: Get the fourth value in the list
+Create the iterator
+Call iterator get next four times
+VALUES SHOULD EXIST INDEPENDENT OF THE ITERATOR
+
