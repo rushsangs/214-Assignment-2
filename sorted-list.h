@@ -83,7 +83,23 @@ SortedListPtr SLCreate(CompareFuncT cf, DestructFuncT df){
  *
  * You need to fill in this function as part of your implementation.
  */
-void SLDestroy(SortedListPtr list);
+void SLDestroy(SortedListPtr list)
+{
+	//traverse through every node in the list, freeing the node
+	Node* p=list->head;
+	Node* tmp;
+	while(p!=NULL)
+	{
+		tmp=p;
+		p=p->next;
+		list->destructf(tmp->data);
+		free(tmp);
+		printf("Deleted one node.\n");
+	}
+	//now free the list itself
+	free(list);
+	printf("List destroyed successfully. \n");
+}
 
 
 /*
@@ -110,7 +126,49 @@ int SLInsert(SortedListPtr list, void *newObj){
 	else
 	{
 		//traverse through linked list and keep checking order
-		int result=0;
+		Node *p=list->head;
+		int result;
+		Node* prev;
+		while(p!=NULL){
+			result=list->comparef(p->data,newObj);
+			if(result==0)
+			{
+				printf("Elements are equal hence not inserted. \n");
+				return 0;
+			}
+			else if(result<0)
+			{
+				prev=p;
+				p=p->next;
+			}
+			else
+			{
+				// insert HERE, i.e. link prev->next to newnode and link newnode->next to p 
+				Node* newnode=(Node*)malloc(sizeof(Node));
+				newnode->data=newObj;
+				//if first element in list
+				if(p==list->head)
+				{
+					newnode->refctr=0;
+					newnode->next=p;
+					list->head=newnode;
+				}
+				else	//not first hence needs some swapping- ERROR DOES NOT WORK
+				{	
+					newnode->refctr=0;
+					newnode->next=prev->next;
+					prev->next=newnode;
+				}
+				return 1;
+			}
+		}
+		//inserting at the end of linked list, and prev is the last node.
+		Node* newnode= (Node*)malloc(sizeof(Node));
+		newnode->data=newObj;
+		newnode->refctr=0;
+		newnode->next=prev->next;
+		prev->next=newnode;
+		return 1;
 	}
 	return 0;
 }

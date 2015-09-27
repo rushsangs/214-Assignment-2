@@ -30,12 +30,16 @@ int main()
 
 	Employee *b=(Employee*)malloc(sizeof(Employee));
 	b->name="Bob";
-	b->salary=400;
+	b->salary=100;
 
 	SortedListPtr ptr=SLCreate(&compareEmployees, &destroyEmployee);
-	SLInsert(ptr, (void *)a);
+	SLInsert(ptr, (void *)b);
+	if(SLInsert(ptr, (void *)a))
+		printf("Inserting b was successful.\n");
+	//need to start using iterator once it has been implemented
 	Employee* firstEmp=(Employee*)(ptr->head->data);
   	printf(" Hello world! %s is the first employee in the sorted list. \n",firstEmp->name);
+  	SLDestroy(ptr);
   	return 0;
 }
 
