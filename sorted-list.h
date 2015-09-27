@@ -18,12 +18,29 @@ typedef struct Node
 } Node;
 
 /*
+ * When your sorted list is used to store objects of some type, since the
+ * type is opaque to you, you will need a comparator function to order
+ * the objects in your sorted list.
+ *
+ * You can expect a comparator function to return a negative value if the
+ * first object is smaller, 0 if the two objects are equal, and a positive
+ * value if the second object is smaller.
+ *
+ * Note that you are not expected to implement any comparator or destruct
+ * functions.  You will be given a comparator function and a destruct
+ * function when a new sorted list is created.
+ */
+
+typedef int (*CompareFuncT)( void *, void * );
+typedef void (*DestructFuncT)( void * );
+
+/*
  * Sorted list type.  You need to fill in the type as part of your implementation.
  */
 struct SortedList
 {
-	int (* CompareFuncT) (void *, void *);
-	void ( *DestructFuncT) (void *);
+	CompareFuncT comparef;
+	DestructFuncT destructf;
 	Node *head;
 };
 typedef struct SortedList* SortedListPtr;
@@ -42,23 +59,6 @@ typedef struct SortedListIterator* SortedListIteratorPtr;
 
 
 /*
- * When your sorted list is used to store objects of some type, since the
- * type is opaque to you, you will need a comparator function to order
- * the objects in your sorted list.
- *
- * You can expect a comparator function to return a negative value if the
- * first object is smaller, 0 if the two objects are equal, and a positive
- * value if the second object is smaller.
- *
- * Note that you are not expected to implement any comparator or destruct
- * functions.  You will be given a comparator function and a destruct
- * function when a new sorted list is created.
- */
-
-typedef int (*CompareFuncT)( void *, void * );
-typedef void (*DestructFuncT)( void * );
-
-/*
  * SLCreate creates a new, empty sorted list.  The caller must provide
  * a comparator function that can be used to order objects that will be
  * kept in the list, and a destruct function that gets rid of the objects
@@ -71,9 +71,9 @@ typedef void (*DestructFuncT)( void * );
  */
 
 SortedListPtr SLCreate(CompareFuncT cf, DestructFuncT df){
-	SortedListPtr* list=(SortedListPtr*)malloc(sizeof(SortedListPtr));
-	list->CompareFuncT=cf;
-	list->DestructFuncT=df;
+	SortedListPtr list=(SortedListPtr)malloc(sizeof(struct SortedList));
+	list->comparef=cf;
+	list->destructf=df;
 	list->head=NULL;
 	return list;
 }
@@ -100,7 +100,7 @@ int SLInsert(SortedListPtr list, void *newObj){
 	if(list->head==NULL)
 	{
 		//insert first element into list
-		Node* newnode=(Node*)calloc(sizeof(Node));
+		Node* newnode=(Node*)malloc(sizeof(Node));
 		list->head=newnode;
 		newnode->data=newObj;
 		newnode->refctr=1;
