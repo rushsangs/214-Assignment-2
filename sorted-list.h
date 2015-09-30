@@ -5,6 +5,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 
 
@@ -54,6 +55,9 @@ typedef struct SortedList* SortedListPtr;
  */
 struct SortedListIterator
 {
+
+	Node *current;
+
 };
 typedef struct SortedListIterator* SortedListIteratorPtr;
 
@@ -136,7 +140,7 @@ int SLInsert(SortedListPtr list, void *newObj){
 				printf("Elements are equal hence not inserted. \n");
 				return 0;
 			}
-			else if(result<0)
+			else if(result>0)
 			{
 				prev=p;
 				p=p->next;
@@ -149,13 +153,13 @@ int SLInsert(SortedListPtr list, void *newObj){
 				//if first element in list
 				if(p==list->head)
 				{
-					newnode->refctr=0;
+					newnode->refctr=1;
 					newnode->next=p;
 					list->head=newnode;
 				}
 				else	//not first hence needs some swapping- ERROR DOES NOT WORK
 				{	
-					newnode->refctr=0;
+					newnode->refctr=1;
 					newnode->next=prev->next;
 					prev->next=newnode;
 				}
@@ -165,7 +169,7 @@ int SLInsert(SortedListPtr list, void *newObj){
 		//inserting at the end of linked list, and prev is the last node.
 		Node* newnode= (Node*)malloc(sizeof(Node));
 		newnode->data=newObj;
-		newnode->refctr=0;
+		newnode->refctr=1;
 		newnode->next=prev->next;
 		prev->next=newnode;
 		return 1;
@@ -186,7 +190,11 @@ int SLInsert(SortedListPtr list, void *newObj){
  * You need to fill in this function as part of your implementation.
  */
 
-int SLRemove(SortedListPtr list, void *newObj);
+int SLRemove(SortedListPtr list, void *newObj)
+{
+
+	return 1;
+}
 
 
 /*
@@ -202,7 +210,13 @@ int SLRemove(SortedListPtr list, void *newObj);
  * You need to fill in this function as part of your implementation.
  */
 
-SortedListIteratorPtr SLCreateIterator(SortedListPtr list);
+SortedListIteratorPtr SLCreateIterator(SortedListPtr list)
+{
+	SortedListIteratorPtr helper = (SortedListIteratorPtr)(malloc(sizeof(struct SortedListIterator)));
+	helper->current=list->head;
+	helper->current->refctr++;
+	return helper;
+}
 
 
 /*
@@ -225,7 +239,14 @@ void SLDestroyIterator(SortedListIteratorPtr iter);
  * You need to fill in this function as part of your implementation.
 */
 
-void * SLGetItem( SortedListIteratorPtr iter );
+void * SLGetItem( SortedListIteratorPtr iter )
+{
+	if(iter->current==NULL)
+		return NULL;
+	
+	return iter->current->data;
+
+}
 
 /*
  * SLNextItem returns the pointer to the data associated with the
@@ -242,6 +263,18 @@ void * SLGetItem( SortedListIteratorPtr iter );
  * You need to fill in this function as part of your implementation.
  */
 
-void * SLNextItem(SortedListIteratorPtr iter);
+void * SLNextItem(SortedListIteratorPtr iter)
+{
+	if(iter->current->next!=NULL)
+		iter->current=iter->current->next;
+	else
+	{
+		iter->current=NULL;
+		return NULL;
+	}
+
+	return iter->current->data;	
+}
 
 #endif
+
