@@ -39,9 +39,16 @@ int main()
 	//need to start using iterator once it has been implemented
 	Employee* firstEmp=(Employee*)(ptr->head->data);
   	printf(" Hello world! %s is the first employee in the sorted list. \n",firstEmp->name);
+
+	SortedListIteratorPtr walker = SLCreateIterator(ptr);
+	printf("Testing Iterator: %s \n", ((Employee*)(SLGetItem(walker)))->name);
+	while(SLNextItem(walker)!=NULL)
+		printf("Testing Iterator NextItem: %s \n", ((Employee *)(SLGetItem(walker)))->name);
+	
   	SLDestroy(ptr);
   	return 0;
 }
+
 
 
 
