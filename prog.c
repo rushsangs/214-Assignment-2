@@ -27,15 +27,26 @@ int main()
 	Employee *a=(Employee*)malloc(sizeof(Employee));
 	a->name="Albert";
 	a->salary=48000;
+	
+	Employee *c=(Employee*)malloc(sizeof(Employee));
+	c->name="Sasha";
+	c->salary=4000;
 
 	Employee *b=(Employee*)malloc(sizeof(Employee));
 	b->name="Bob";
 	b->salary=100;
 
+	Employee *g=(Employee*)malloc(sizeof(Employee));
+	g->name="Ulysses";
+	g->salary=3000;
+
 	SortedListPtr ptr=SLCreate(&compareEmployees, &destroyEmployee);
 	SLInsert(ptr, (void *)b);
-	if(SLInsert(ptr, (void *)a))
-		printf("Inserting b was successful.\n");
+	SLInsert(ptr, (void *)a);
+	SLInsert(ptr, (void *)c);
+	SLInsert(ptr, (void *)g);
+	SLRemove(ptr, (void *)c);
+
 	//need to start using iterator once it has been implemented
 	Employee* firstEmp=(Employee*)(ptr->head->data);
   	printf(" Hello world! %s is the first employee in the sorted list. \n",firstEmp->name);
@@ -48,6 +59,7 @@ int main()
   	SLDestroy(ptr);
   	return 0;
 }
+
 
 
 
