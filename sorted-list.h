@@ -192,8 +192,35 @@ int SLInsert(SortedListPtr list, void *newObj){
 
 int SLRemove(SortedListPtr list, void *newObj)
 {
-
-	return 1;
+	if(list->head==NULL)
+	{
+		printf("Error: List is empty. Cannot remove anything. \n");
+		return 0;
+	}
+			
+	Node *tmp = list->head;
+	Node *prev = list->head;	
+	
+	if(list->comparef(tmp->data, newObj)==0)
+	{
+		list->head=list->head->next;
+		list->destructf(tmp);
+		free(tmp);
+		return 1;
+	}	
+	tmp=tmp->next;
+	while(tmp!=NULL)
+	{
+		if(list->comparef(tmp->data, newObj)==0)
+		{
+			prev->next=tmp->next;
+			list->destructf(tmp->data);
+			free(tmp);			
+		}
+		tmp=tmp->next;
+		prev=prev->next;		
+	}
+	return 0;
 }
 
 
@@ -228,9 +255,12 @@ SortedListIteratorPtr SLCreateIterator(SortedListPtr list)
  * You need to fill in this function as part of your implementation.
  */
 
-void SLDestroyIterator(SortedListIteratorPtr iter);
-
-
+void SLDestroyIterator(SortedListIteratorPtr iter)
+{
+	if(iter->current!=NULL)
+		iter->current->refctr--;
+	free(iter);		
+}
 /*
  * SLGetItem returns the pointer to the data associated with the
  * SortedListIteratorPtr.  It should return 0 if the iterator
@@ -266,9 +296,14 @@ void * SLGetItem( SortedListIteratorPtr iter )
 void * SLNextItem(SortedListIteratorPtr iter)
 {
 	if(iter->current->next!=NULL)
+	{	
+		iter->current->refctr--;
 		iter->current=iter->current->next;
+		iter->current->refctr++;
+	}
 	else
 	{
+		iter->current->refctr--;
 		iter->current=NULL;
 		return NULL;
 	}
@@ -277,4 +312,5 @@ void * SLNextItem(SortedListIteratorPtr iter)
 }
 
 #endif
+
 
