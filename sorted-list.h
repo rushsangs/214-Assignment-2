@@ -5,7 +5,6 @@
  */
 
 #include <stdlib.h>
-#include <stdio.h>
 
 
 
@@ -47,8 +46,6 @@ struct SortedList
 typedef struct SortedList* SortedListPtr;
 
 
-
-
 /*
  * Iterator type for user to "walk" through the list item by item, from
  * beginning to end.  You need to fill in the type as part of your implementation.
@@ -57,9 +54,9 @@ struct SortedListIterator
 {
 	DestructFuncT destructf;
 	Node *current;
-
 };
 typedef struct SortedListIterator* SortedListIteratorPtr;
+
 
 
 /*
@@ -74,45 +71,14 @@ typedef struct SortedListIterator* SortedListIteratorPtr;
  * You need to fill in this function as part of your implementation.
  */
 
-SortedListPtr SLCreate(CompareFuncT cf, DestructFuncT df){
-	SortedListPtr list=(SortedListPtr)malloc(sizeof(struct SortedList));
-	list->comparef=cf;
-	list->destructf=df;
-	list->head=NULL;
-	return list;
-}
+SortedListPtr SLCreate(CompareFuncT cf, DestructFuncT df);
 
 /*
  * SLDestroy destroys a list, freeing all dynamically allocated memory.
  *
  * You need to fill in this function as part of your implementation.
  */
-void SLDestroy(SortedListPtr list)
-{
-	//traverse through every node in the list, freeing the node
-	Node* p=list->head;
-	Node* tmp;
-	while(p!=NULL)
-	{
-		tmp=p;
-		p=p->next;
-		if(tmp->refctr==1)
-		{
-		//destroy the element
-			list->destructf(tmp->data);
-			free(tmp);
-			printf("Deleted one node.\n");
-		}
-		else
-		{
-			//do not destroy it, it has an iterator on it! just make it's next point to null
-			tmp->next=NULL;
-		}
-	}
-	//now free the list itself
-	free(list);
-	printf("List destroyed successfully. \n");
-}
+void SLDestroy(SortedListPtr list);
 
 
 /*
@@ -125,66 +91,7 @@ void SLDestroy(SortedListPtr list)
  * You need to fill in this function as part of your implementation.
  */
 
-int SLInsert(SortedListPtr list, void *newObj){
-	if(list->head==NULL)
-	{
-		//insert first element into list
-		Node* newnode=(Node*)malloc(sizeof(Node));
-		list->head=newnode;
-		newnode->data=newObj;
-		newnode->refctr=1;
-		newnode->next=NULL;
-		return 1;
-	}
-	else
-	{
-		//traverse through linked list and keep checking order
-		Node *p=list->head;
-		int result;
-		Node* prev;
-		while(p!=NULL){
-			result=list->comparef(p->data,newObj);
-			if(result==0)
-			{
-				printf("Elements are equal hence not inserted. \n");
-				return 0;
-			}
-			else if(result>0)
-			{
-				prev=p;
-				p=p->next;
-			}
-			else
-			{
-				// insert HERE, i.e. link prev->next to newnode and link newnode->next to p 
-				Node* newnode=(Node*)malloc(sizeof(Node));
-				newnode->data=newObj;
-				//if first element in list
-				if(p==list->head)
-				{
-					newnode->refctr=1;
-					newnode->next=p;
-					list->head=newnode;
-				}
-				else	//not first hence needs some swapping- ERROR DOES NOT WORK
-				{	
-					newnode->refctr=1;
-					newnode->next=prev->next;
-					prev->next=newnode;
-				}
-				return 1;
-			}
-		}
-		//inserting at the end of linked list, and prev is the last node.
-		Node* newnode= (Node*)malloc(sizeof(Node));
-		newnode->data=newObj;
-		newnode->refctr=1;
-		newnode->next=prev->next;
-		prev->next=newnode;
-		return 1;
-	}
-	return 0;
-}
+int SLInsert(SortedListPtr list, void *newObj);
 
 
 /*
@@ -199,55 +106,7 @@ int SLInsert(SortedListPtr list, void *newObj){
  * You need to fill in this function as part of your implementation.
  */
 
-int SLRemove(SortedListPtr list, void *newObj)
-{
-	if(list->head==NULL)
-	{
-		printf("Error: List is empty. Cannot remove anything. \n");
-		return 0;
-	}
-			
-	Node *tmp = list->head;
-	Node *prev = list->head;	
-	if(list->comparef(tmp->data, newObj)==0)
-	{
-		list->head=list->head->next;
-		if(tmp->refctr>1)
-		{
-			printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
-			tmp->next=NULL;
-		}
-		else
-		{
-			list->destructf(tmp);
-			free(tmp);
-		}
-		return 1;
-	}	
-	tmp=tmp->next;
-	while(tmp!=NULL &&list->comparef(tmp->data,newObj)>-1)
-	{
-		if(list->comparef(tmp->data, newObj)==0)
-		{
-			prev->next=tmp->next;
-			if(tmp->refctr>1)
-			{
-				printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
-				tmp->next=NULL;
-			}
-			else
-			{
-				list->destructf(tmp);
-				free(tmp);
-			}
-			return 1;
-		}
-		tmp=tmp->next;
-		prev=prev->next;		
-	}
-	printf("Element not found in list, hence could not be removed from the list.\n");
-	return 0;
-}
+int SLRemove(SortedListPtr list, void *newObj);
 
 
 /*
@@ -263,14 +122,7 @@ int SLRemove(SortedListPtr list, void *newObj)
  * You need to fill in this function as part of your implementation.
  */
 
-SortedListIteratorPtr SLCreateIterator(SortedListPtr list)
-{
-	SortedListIteratorPtr helper = (SortedListIteratorPtr)(malloc(sizeof(struct SortedListIterator)));
-	helper->destructf=list->destructf;
-	helper->current=list->head;
-	helper->current->refctr++;
-	return helper;
-}
+SortedListIteratorPtr SLCreateIterator(SortedListPtr list);
 
 
 /*
@@ -282,19 +134,9 @@ SortedListIteratorPtr SLCreateIterator(SortedListPtr list)
  * You need to fill in this function as part of your implementation.
  */
 
-void SLDestroyIterator(SortedListIteratorPtr iter)
-{
-	if(iter->current!=NULL)
-		iter->current->refctr--;
-	else if(iter->current!=NULL && iter->current->refctr==0)
-	{
-		//destroy the node
-		iter->destructf(iter->current->data);
-		free(iter->current);
-	}	
-	free(iter);		
-	printf("Iterator destroyed\n");
-}
+void SLDestroyIterator(SortedListIteratorPtr iter);
+
+
 /*
  * SLGetItem returns the pointer to the data associated with the
  * SortedListIteratorPtr.  It should return 0 if the iterator
@@ -303,16 +145,7 @@ void SLDestroyIterator(SortedListIteratorPtr iter)
  * You need to fill in this function as part of your implementation.
 */
 
-void * SLGetItem( SortedListIteratorPtr iter )
-{
-	if(iter->current==NULL)
-	{
-		printf("Iterator reached the end.\n");
-		return NULL;
-	}
-	return iter->current->data;
-
-}
+void * SLGetItem( SortedListIteratorPtr iter );
 
 /*
  * SLNextItem returns the pointer to the data associated with the
@@ -329,41 +162,6 @@ void * SLGetItem( SortedListIteratorPtr iter )
  * You need to fill in this function as part of your implementation.
  */
 
-void * SLNextItem(SortedListIteratorPtr iter)
-{
-	if(iter->current->next!=NULL)
-	{	
-		iter->current->refctr--;
-		if(iter->current->refctr==0)
-		{
-			//destroy the node
-			Node* tmp=iter->current->next;
-			iter->destructf(iter->current->data);
-			free(iter->current);
-			iter->current=tmp;
-		}
-		else
-		{
-			iter->current=iter->current->next;
-		}
-		iter->current->refctr++;
-	}
-	else
-	{
-		iter->current->refctr--;
-		if(iter->current->refctr==0)
-		{	
-			//destroy the node
-			iter->destructf(iter->current->data);
-			free(iter->current);
-		}
-		iter->current=NULL;
-		return NULL;
-	}
-
-	return iter->current->data;	
-}
+void * SLNextItem(SortedListIteratorPtr iter);
 
 #endif
-
-
