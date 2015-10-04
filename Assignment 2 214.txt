@@ -23,3 +23,18 @@ Create the iterator
 Call iterator get next four times
 VALUES SHOULD EXIST INDEPENDENT OF THE ITERATOR
 
+If I call SLRemove on a node which has an iterator on it, it should not remove the node but print out an error.
+
+SLDestroy also destroys all iterators.
+So we need to store all iterators in the SortedList. Array of pointers to iterators. We are pointing to a memory location to point to pointers.
+
+DONT DELETE A NODE IF ITS ASSOCIATED WITH THE ITERATOR, UNLINK THE NODE AND SET ITS NEXT TO NULL.
+
+Memory Analysis:
+ write about the chunk of bytes that it would take based on the data.
+pointers are 4 bytes
+ints are 4 bytes
+hoe mny byts we use in gnerl for blah blah blah is good enough for the TAs
+
+TA doesnt know if we can calculate big O for memory
+Also time analysis, most functions can be big O of n.

@@ -55,7 +55,7 @@ typedef struct SortedList* SortedListPtr;
  */
 struct SortedListIterator
 {
-
+	DestructFuncT destructf;
 	Node *current;
 
 };
@@ -96,9 +96,18 @@ void SLDestroy(SortedListPtr list)
 	{
 		tmp=p;
 		p=p->next;
-		list->destructf(tmp->data);
-		free(tmp);
-		printf("Deleted one node.\n");
+		if(tmp->refctr==1)
+		{
+		//destroy the element
+			list->destructf(tmp->data);
+			free(tmp);
+			printf("Deleted one node.\n");
+		}
+		else
+		{
+			//do not destroy it, it has an iterator on it! just make it's next point to null
+			tmp->next=NULL;
+		}
 	}
 	//now free the list itself
 	free(list);
@@ -240,6 +249,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 SortedListIteratorPtr SLCreateIterator(SortedListPtr list)
 {
 	SortedListIteratorPtr helper = (SortedListIteratorPtr)(malloc(sizeof(struct SortedListIterator)));
+	helper->destructf=list->destructf;
 	helper->current=list->head;
 	helper->current->refctr++;
 	return helper;
@@ -259,7 +269,14 @@ void SLDestroyIterator(SortedListIteratorPtr iter)
 {
 	if(iter->current!=NULL)
 		iter->current->refctr--;
+	else if(iter->current!=NULL && iter->current->refctr==0)
+	{
+		//destroy the node
+		iter->destructf(iter->current->data);
+		free(iter->current);
+	}	
 	free(iter);		
+	printf("Iterator destroyed\n");
 }
 /*
  * SLGetItem returns the pointer to the data associated with the
@@ -272,8 +289,10 @@ void SLDestroyIterator(SortedListIteratorPtr iter)
 void * SLGetItem( SortedListIteratorPtr iter )
 {
 	if(iter->current==NULL)
+	{
+		printf("Iterator reached the end.\n");
 		return NULL;
-	
+	}
 	return iter->current->data;
 
 }
@@ -298,12 +317,29 @@ void * SLNextItem(SortedListIteratorPtr iter)
 	if(iter->current->next!=NULL)
 	{	
 		iter->current->refctr--;
-		iter->current=iter->current->next;
+		if(iter->current->refctr==0)
+		{
+			//destroy the node
+			Node* tmp=iter->current->next;
+			iter->destructf(iter->current->data);
+			free(iter->current);
+			iter->current=tmp;
+		}
+		else
+		{
+			iter->current=iter->current->next;
+		}
 		iter->current->refctr++;
 	}
 	else
 	{
 		iter->current->refctr--;
+		if(iter->current->refctr==0)
+		{	
+			//destroy the node
+			iter->destructf(iter->current->data);
+			free(iter->current);
+		}
 		iter->current=NULL;
 		return NULL;
 	}
