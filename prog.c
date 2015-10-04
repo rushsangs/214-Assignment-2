@@ -69,6 +69,9 @@ int main()
 		SLNextItem(walker);	
 		printf("Testing Iterator NextItem: %s \n", ((Employee *)(SLGetItem(walker)))->name);
 	}
+	//case 2: trying to remove from list when iterator points to it
+	SLRemove(ptr, (void *)a);
+	
   	//case 1: destroyed the list but an iterator still points to one of the elements.
   	SLDestroy(ptr);
   	printf("Iterator is pointing to: %s \n", ((Employee *)(SLGetItem(walker)))->name);
@@ -80,7 +83,6 @@ int main()
 		printf("Iterator 2 reaches null\n");
 	SLDestroyIterator(walker);
 	SLDestroyIterator(walker2);
-
 
   	return 0;
 }

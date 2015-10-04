@@ -209,12 +209,20 @@ int SLRemove(SortedListPtr list, void *newObj)
 			
 	Node *tmp = list->head;
 	Node *prev = list->head;	
-	
+	printf("We entered SLRemove\n");
 	if(list->comparef(tmp->data, newObj)==0)
 	{
 		list->head=list->head->next;
-		list->destructf(tmp);
-		free(tmp);
+		if(tmp->refctr>1)
+		{
+			printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
+			tmp->next=NULL;
+		}
+		else
+		{
+			list->destructf(tmp);
+			free(tmp);
+		}
 		return 1;
 	}	
 	tmp=tmp->next;
@@ -223,8 +231,17 @@ int SLRemove(SortedListPtr list, void *newObj)
 		if(list->comparef(tmp->data, newObj)==0)
 		{
 			prev->next=tmp->next;
-			list->destructf(tmp->data);
-			free(tmp);			
+			if(tmp->refctr>1)
+			{
+				printf("You are trying to remove a node which has an iterator pointing to it. Node removed from list but still exists in memory.\n");
+				tmp->next=NULL;
+			}
+			else
+			{
+				list->destructf(tmp);
+				free(tmp);
+			}
+			return 1;
 		}
 		tmp=tmp->next;
 		prev=prev->next;		
