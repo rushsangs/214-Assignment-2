@@ -209,7 +209,6 @@ int SLRemove(SortedListPtr list, void *newObj)
 			
 	Node *tmp = list->head;
 	Node *prev = list->head;	
-	printf("We entered SLRemove\n");
 	if(list->comparef(tmp->data, newObj)==0)
 	{
 		list->head=list->head->next;
@@ -226,7 +225,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 		return 1;
 	}	
 	tmp=tmp->next;
-	while(tmp!=NULL)
+	while(tmp!=NULL &&list->comparef(tmp->data,newObj)>-1)
 	{
 		if(list->comparef(tmp->data, newObj)==0)
 		{
@@ -246,6 +245,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 		tmp=tmp->next;
 		prev=prev->next;		
 	}
+	printf("Element not found in list, hence could not be removed from the list.\n");
 	return 0;
 }
 
