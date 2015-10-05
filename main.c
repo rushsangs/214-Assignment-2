@@ -40,47 +40,58 @@ int main()
 	d->name="Dudley";
 	d->salary=45000;
 
-	Employee *e=(Employee*)malloc(sizeof(Employee));
-	e->name="Elysia";
-	e->salary=44000;
-
-
+	//////////////////////// INITIALISING THE SORTED LIST ///////////////////////////
 	SortedListPtr ptr=SLCreate(&compareEmployees, &destroyEmployee);
-	SLInsert(ptr, (void *)b);
-	SLInsert(ptr, (void *)a);
-	SLInsert(ptr, (void *)c);
-	
-	SLInsert(ptr, (void *)d);
-	//SLRemove(ptr, (void *)c);
+	printf("Creating SortedList...\n");
+	if(SLInsert(ptr, (void *)b))
+		printf("Inserted employee with name %s and salary %d \n",b->name,b->salary);
+	if(SLInsert(ptr, (void *)a))
+		printf("Inserted employee with name %s and salary %d \n",a->name,a->salary);
+	if(SLInsert(ptr, (void *)c))
+		printf("Inserted employee with name %s and salary %d \n",c->name,c->salary);
+	if(SLInsert(ptr, (void *)d))
+		printf("Inserted employee with name %s and salary %d \n",d->name,d->salary);
+	printf("Finished inserting.\n\n");
 
-	//need to start using iterator once it has been implemented
 	Employee* firstEmp=(Employee*)(ptr->head->data);
-  	printf(" Hello world! %s is the first employee in the sorted list. \n",firstEmp->name);
-
+  	printf("%s is the first employee in the sorted list. \n\n",firstEmp->name);
+  	
+  	////////////////////// CREATING ITERATORS //////////////////////////////////////
+  	printf("Creating iterator 1 and 2\n");
 	SortedListIteratorPtr walker = SLCreateIterator(ptr);
-
 	SortedListIteratorPtr walker2 = SLCreateIterator(ptr);
 
 
-	printf("Testing Iterator: %s \n", ((Employee*)(SLGetItem(walker)))->name);
+	printf("Testing SLGetItem for Iterator 1: %s \n", ((Employee*)(SLGetItem(walker)))->name);
 
-	//the walker will stay at the last element
+	//the walker1 will traverse through the list to the last element
 	while(walker->current->next!=NULL){
 		SLNextItem(walker);	
-		printf("Testing Iterator NextItem: %s \n", ((Employee *)(SLGetItem(walker)))->name);
+		printf("Testing Iterator 1 NextItem: %s \n\n", ((Employee *)(SLGetItem(walker)))->name);
 	}
-	//case 2: trying to remove from list when iterator points to it
+
+	///////////////// OPERATIONS ON SORTED LISTS //////////////////////////
+	printf("Attempting to remove Bob from the list.\n");
+	if(SLRemove(ptr, (void *)b))
+		printf("Element removed successfully.\n");
+	
+	//trying to remove from list when iterator points to it
+	printf("Attempting to remove Dudley from the SortedList (iterator 1 points to it).\n");
 	SLRemove(ptr, (void *)d);
 	
-  	//case 1: destroyed the list but an iterator still points to one of the elements.
+  	
+  	//destroyed the list but an iterator still points to one of the elements.
+  	printf("Attempting to destroy the list. (Note that iterators 1 and 2 are still active.\n\n");
   	SLDestroy(ptr);
-  	printf("Iterator is pointing to: %s \n", ((Employee *)(SLGetItem(walker)))->name);
+  	// testing iterators
+  	printf("Iterator 1 is pointing to: %s \n", ((Employee *)(SLGetItem(walker)))->name);
 	printf("Iterator 2 is pointing to: %s\n",((Employee *)(SLGetItem(walker2)))->name );
-	printf("Lets traverse through each iterator\n");
+	printf("CHecking next element for each iterator\n");
 	if(SLNextItem(walker)==NULL)
 		printf("Iterator 1 reaches null\n");
 	if(SLNextItem(walker2)==NULL)
 		printf("Iterator 2 reaches null\n");
+	
 	SLDestroyIterator(walker);
 	SLDestroyIterator(walker2);
 

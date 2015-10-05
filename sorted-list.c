@@ -158,7 +158,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 		}
 		else
 		{
-			list->destructf(tmp);
+			list->destructf(tmp->data);
 			free(tmp);
 		}
 		return 1;
@@ -176,7 +176,7 @@ int SLRemove(SortedListPtr list, void *newObj)
 			}
 			else
 			{
-				list->destructf(tmp);
+				list->destructf(tmp->data);
 				free(tmp);
 			}
 			return 1;
