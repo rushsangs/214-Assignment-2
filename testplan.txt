@@ -1,0 +1,41 @@
+Test Plan
+
+What to pass as input?
+The main.c file already consists of a testcase that we have created for testing.
+The testcase is designed to use Employee structs as the inputs for the SortedList. 
+Each Employee has a name and a salary.
+The comparator function simply compares the employee structures on the basis of their salaries.
+The destructor function destroys the employee structures.
+
+In order to customise and test your input, simply create more pointers to the Employee structs.
+By default, our employee structs are:
+
+A
+Name: Albert
+Salary: 48000
+
+B
+Name: Bob
+Salary: 47000
+
+C
+Name:Carter
+Salary: 46000
+
+D
+Name: Dudley
+Salary: 45000
+
+Expected output:
+By default, we test all the features and functions of the SortedList in our implementation.
+We insert B, A, C, D in the respective order, and observe that the list sorts them and Albert is the first element in the sorted list.
+The Sorted list is in the order: Albert->Bob->Carter->Dudley
+We create two iterators, where iterator 1 traverses to Dudley and Iterator 2 stays at Albert
+We then proceed to test SLRemove, by attempting to remove Bob and Dudley.
+Bob gets removed successfully, but Dudley has iterator 1 pointing to it, so it gets isolated instead.
+After this, we destroy the entire list, while the iterators are still active.
+This still preserves Albert and Dudley (isolating both of them), deleting Carter.
+
+Now we test the iterators, and check if they still point to Dudley and Albert respectively.
+We attempt to get the next item from the iterators, but observe that they are null, since the nodes are isolated.
+We then destory the iterators.
